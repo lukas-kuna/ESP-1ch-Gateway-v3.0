@@ -336,27 +336,35 @@ int WlanReadWpa( int maxwpa ) {
 	const char wpafile[] = "/config.txt";
 	if (!SPIFFS.exists(wpafile)) {
 		Serial.println("ERROR:: WlanReadWpa, file does not exist");
-		return(-1);
+		return(0);
 	}
 	File f = SPIFFS.open(wpafile, "r");
 	if (!f) {
 		Serial.println("ERROR:: WlanReadWpa, file open failed");
-		return(-1);
+		return(0);
 	}
 #if WIFIMANAGER > 0
+  char *wm_ssid = NULL, *wm_password;
 	String ssid=f.readStringUntil(',');
 	String pass=f.readStringUntil('\n');
+  if (pass[pass.length() - 1] == '\r') pass = pass.substring(0, pass.length() - 1);
 
-	char ssidBuf[ssid.length()+1];
-	ssid.toCharArray(ssidBuf,ssid.length()+1);
-	char passBuf[pass.length()+1];
-	pass.toCharArray(passBuf,pass.length()+1);
-	Serial.print(F("WlanReadWpa: ")); Serial.print(ssidBuf); Serial.print(F(", ")); Serial.println(passBuf);
-	
-	//strcpy(wpa[0][0] , ssidBuf);
-	//strcpy(wpa[0][1] , passBuf);
-	wpa[0][0] = ssidBuf;
-	wpa[0][1] = passBuf;
+    // we need dynamic allocation
+	wm_ssid = (char *)malloc(ssid.length() + 1);
+	wm_password = (char *)malloc(pass.length() + 1);
+  if (! wm_ssid || ! wm_password)
+  {
+    free(wm_ssid);
+    f.close();
+    return(0);
+  }
+
+  ssid.toCharArray(wm_ssid, ssid.length()+1);
+  pass.toCharArray(wm_password, pass.length()+1);
+
+  wpa[0][0] = wm_ssid;
+  wpa[0][1] = wm_password;
+  
 	Serial.print(F("WlanReadWpa: <")); 
 	Serial.print(wpa[0][0]); 
 	Serial.print(F(">, <")); 
@@ -364,6 +372,7 @@ int WlanReadWpa( int maxwpa ) {
 	Serial.println(F(">"));
 #endif
 	f.close();
+  return(1);
 }
 
 // ----------------------------------------------------------------------------
