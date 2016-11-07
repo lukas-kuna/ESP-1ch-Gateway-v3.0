@@ -757,7 +757,7 @@ void sendstat() {
 	
     t = now();												// get timestamp for statistics
 		
-	sprintf(stat_timestamp, "%d-%d-%2d %d:%d:%02d CET", year(),month(),day(),hour(),minute(),second());
+	sprintf(stat_timestamp, "%d-%02d-%02d %02d:%02d:%02d CET", year(),month(),day(),hour(),minute(),second());
 	yield();
 	
 	ftoa(lat,clat,4);										// Convert lat to char array with 4 decimals
