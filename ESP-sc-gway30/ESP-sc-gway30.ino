@@ -145,6 +145,11 @@ uint16_t lastToken = 0x00;
 uint16_t frameCount=0;							// We REALLY should write this to SPIFF file
 #endif
 
+int sendPacket(uint8_t *buff_down, uint8_t length);
+static void initLoraModem();
+String WifiServer(char *cmd, char *arg);
+int receivePacket(uint8_t * buff_up);
+
 // ----------------------------------------------------------------------------
 // DIE is not use actively in the source code anymore.
 // It is replaced by a Serial.print command so we know that we have a problem
